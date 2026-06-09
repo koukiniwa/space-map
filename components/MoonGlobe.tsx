@@ -103,7 +103,7 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
       const width  = container.clientWidth
       const height = container.clientHeight
       const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100)
-      camera.position.z = 2.8
+      camera.position.z = 3.4
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
       renderer.setSize(width, height)
