@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from "react"
+import type * as THREE from 'three'
 import { LandingSite } from "@/data/lunar-sites"
 
 interface MoonGlobeProps {
