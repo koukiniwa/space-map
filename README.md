@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 月面探査機マップ
 
-## Getting Started
+月に着陸した探査機・着陸船の位置をインタラクティブな3Dマップで可視化するWebアプリ。
 
-First, run the development server:
+## テクスチャのセットアップ（必須）
+
+Three.jsの月球体にはNASAのテクスチャが必要です。以下の手順でダウンロードし、`public/textures/` に配置してください。
+
+### 月面テクスチャ（moon.jpg）
+
+NASA CGI Moon Kit からダウンロードします。
+
+1. https://svs.gsfc.nasa.gov/4720 を開く
+2. **"Moon_1k"** または解像度 **1024x1024** の `lroc_color_poles_1k.jpg` をダウンロード
+3. `public/textures/moon.jpg` として保存
+
+### バンプマップ（moon-bump.jpg）
+
+同じページから高度データのグレースケール画像をダウンロードします。
+
+1. 同ページの **"Elevation"** セクションから `ldem_3_8bit.jpg`（または同等の1kグレースケール）をダウンロード
+2. `public/textures/moon-bump.jpg` として保存
+
+### ファイル構成
+
+```
+public/
+  textures/
+    moon.jpg       ← カラーテクスチャ（1024x1024）
+    moon-bump.jpg  ← バンプマップ（1024x1024、グレースケール）
+```
+
+> テクスチャが存在しない場合でもアプリは動作しますが、月は灰色のベタ塗りになります。
+
+---
+
+## 開発サーバーの起動
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[http://localhost:3000](http://localhost:3000) を開くと自動的に `/moon` にリダイレクトされます。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 操作方法
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **ドラッグ** — 月を回転
+- **スクロール** — ズームイン・アウト
+- **マーカークリック** — 探査機の詳細情報を表示
 
-## Learn More
+## デプロイ
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Vercel へのデプロイ時は、`public/textures/` のテクスチャファイルもリポジトリに含めるか、別途ホスティングして参照してください。
