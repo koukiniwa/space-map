@@ -115,12 +115,22 @@ export default function MoonPage() {
 
       {/* ── Header ── */}
       <header className="flex items-center justify-between px-5 py-2.5 border-b border-zinc-800 flex-shrink-0 gap-4">
-        <h1 className="text-white text-base font-bold tracking-widest whitespace-nowrap">
-          月面探査機マップ
-        </h1>
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <h1 className="text-white text-base font-bold tracking-widest whitespace-nowrap">
+            月面探査機マップ
+          </h1>
+          <a
+            href="https://www.uchu-bin.jp"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[10px] text-zinc-500 hover:text-zinc-300 border border-zinc-700 hover:border-zinc-500 px-2 py-0.5 rounded transition-colors whitespace-nowrap"
+          >
+            宇宙便 ↗
+          </a>
+        </div>
 
         {/* Stats */}
-        <div className="flex items-center gap-4 text-xs text-zinc-500 flex-1 justify-center">
+        <div className="hidden sm:flex items-center gap-4 text-xs text-zinc-500 flex-1 justify-center">
           <span className="tabular-nums">
             <span className="text-zinc-300 font-bold">{filteredSites.length}</span> ミッション
           </span>
@@ -151,7 +161,7 @@ export default function MoonPage() {
         </div>
 
         {/* Legend */}
-        <div className="flex items-center gap-3 text-xs text-zinc-500 flex-shrink-0">
+        <div className="hidden md:flex items-center gap-3 text-xs text-zinc-500 flex-shrink-0">
           {(['active', 'inactive', 'lost'] as const).map(s => (
             <span key={s} className="flex items-center gap-1">
               <span className={`inline-block w-1.5 h-1.5 rounded-full ${STATUS_CSS[s]}`} />

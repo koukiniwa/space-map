@@ -46,7 +46,7 @@ export default function InfoPanel({ site, onClose, canPrev, canNext, onPrev, onN
   return (
     <aside
       className={`
-        fixed top-0 right-0 h-full w-[340px]
+        fixed top-0 right-0 h-full w-full sm:w-[340px]
         bg-zinc-950 border-l border-zinc-800
         z-10 flex flex-col
         transform transition-transform duration-300 ease-in-out
@@ -138,7 +138,7 @@ export default function InfoPanel({ site, onClose, canPrev, canNext, onPrev, onN
                   rel="noopener noreferrer"
                   className="w-full py-2 rounded text-sm text-center border border-zinc-700 hover:border-zinc-500 text-zinc-400 hover:text-zinc-200 transition-colors"
                 >
-                  関連記事を読む ↗
+                  Wikipedia ↗
                 </a>
               )}
             </div>

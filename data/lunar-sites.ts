@@ -28,6 +28,7 @@ export const landingSites: LandingSite[] = [
     landingDate: "1966-02-03",
     description:
       "史上初めて月面への軟着陸に成功したソ連の無人探査機。嵐の大洋に着陸し、月面のパノラマ写真を初めて地球に送信した。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E3%83%AB%E3%83%8A9%E5%8F%B7",
     photoUrl: "/images/missions/luna-9.jpg",
     photoCredit: "Soviet Academy of Sciences / NASA",
   },
@@ -41,6 +42,7 @@ export const landingSites: LandingSite[] = [
     lat: -0.68,
     lon: 56.3,
     description: "史上初の無人月サンプルリターンミッション。豊かの海に着陸し、月の土壌約101gを採取して地球に帰還した。無人機によるサンプル回収の可能性を初めて実証した歴史的ミッション。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E3%83%AB%E3%83%8A16%E5%8F%B7",
     photoUrl: "/images/missions/luna-16.jpg",
     photoCredit: "Soviet Academy of Sciences",
   },
@@ -54,6 +56,7 @@ export const landingSites: LandingSite[] = [
     lat: 38.28,
     lon: -35.0,
     description: "人類初の無人月面走行車「ルノホート1号」を月面に届けたミッション。雨の海に着陸し、ローバーは322日間で10.54kmを走行。月面の詳細な科学データを初めて長期にわたり収集した。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E3%83%AB%E3%83%8E%E3%83%9B%E3%83%BC%E3%83%881%E5%8F%B7",
     photoUrl: "/images/missions/luna-17.jpg",
     photoCredit: "Soviet Academy of Sciences",
   },
@@ -67,6 +70,7 @@ export const landingSites: LandingSite[] = [
     lat: 25.85,
     lon: 30.45,
     description: "「ルノホート2号」を月面に届けたミッション。レ・モニエ・クレーターに着陸し、ローバーは4ヶ月間で約39kmを走行。長年にわたり惑星探査車の走行距離記録を保持した。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E3%83%AB%E3%83%8E%E3%83%9B%E3%83%BC%E3%83%882%E5%8F%B7",
     photoUrl: "/images/missions/luna-21.jpg",
     photoCredit: "Soviet Academy of Sciences",
   },
@@ -80,6 +84,7 @@ export const landingSites: LandingSite[] = [
     lat: 12.25,
     lon: 62.2,
     description: "ソ連最後の月面着陸ミッション。危機の海に着陸し、月の土壌約170gを採取して地球に帰還。その後44年間、月からのサンプルリターンは行われなかった。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E3%83%AB%E3%83%8A24%E5%8F%B7",
     photoUrl: "/images/missions/luna-24.png",
     photoCredit: "Soviet Academy of Sciences",
   },
@@ -95,6 +100,7 @@ export const landingSites: LandingSite[] = [
     landingDate: "1969-07-20",
     description:
       "人類初の月面着陸を達成したミッション。1969年7月20日、ニール・アームストロングとバズ・オルドリンが静かの海に降り立ち、歴史に刻まれた。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%9D%E3%83%AD11%E5%8F%B7",
     photoUrl: "/images/missions/apollo-11.jpg",
     photoCredit: "NASA / Neil A. Armstrong",
   },
@@ -109,6 +115,7 @@ export const landingSites: LandingSite[] = [
     landingDate: "1969-11-19",
     description:
       "嵐の大洋に精密着陸したアポロ2回目の有人月面着陸ミッション。近くのサーベイヤー3号の部品を回収し、精度の高い着陸技術を実証した。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%9D%E3%83%AD12%E5%8F%B7",
     photoUrl: "/images/missions/apollo-12.jpg",
     photoCredit: "NASA",
   },
@@ -123,6 +130,7 @@ export const landingSites: LandingSite[] = [
     landingDate: "1971-02-05",
     description:
       "フラ・マウロ高地に着陸。アラン・シェパードとエドガー・ミッチェルが月面を歩行し、約42kgの月のサンプルを採取して帰還した。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%9D%E3%83%AD14%E5%8F%B7",
     photoUrl: "/images/missions/apollo-14.jpg",
     photoCredit: "NASA",
   },
@@ -137,6 +145,7 @@ export const landingSites: LandingSite[] = [
     landingDate: "1971-07-30",
     description:
       "ハドリー・リルに着陸。初めて月面車を使用し、アペニン山脈の麓で地質調査を実施。約77kgの岩石サンプルを採取した。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%9D%E3%83%AD15%E5%8F%B7",
     photoUrl: "/images/missions/apollo-15.jpg",
     photoCredit: "NASA / David R. Scott",
   },
@@ -151,6 +160,7 @@ export const landingSites: LandingSite[] = [
     landingDate: "1972-04-21",
     description:
       "デカルト高地に着陸した初の月の高地探査ミッション。ジョン・ヤングとチャールズ・デュークが月面車で広範囲を探索し、約95kgのサンプルを回収した。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%9D%E3%83%AD16%E5%8F%B7",
     photoUrl: "/images/missions/apollo-16.jpg",
     photoCredit: "NASA / Charles M. Duke Jr.",
   },
@@ -165,6 +175,7 @@ export const landingSites: LandingSite[] = [
     landingDate: "1972-12-11",
     description:
       "タウルス・リットロウ谷への最後のアポロ着陸ミッション。ジーン・サーナンとハリソン・シュミットが約110kgのサンプルを採取。現在も人類最後の月面歩行となっている。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E3%82%A2%E3%83%9D%E3%83%AD17%E5%8F%B7",
     photoUrl: "/images/missions/apollo-17.jpg",
     photoCredit: "NASA / Eugene A. Cernan",
   },
@@ -179,6 +190,7 @@ export const landingSites: LandingSite[] = [
     landingDate: "2013-12-14",
     description:
       "中国初の月面軟着陸に成功した探査機。雨の海北部に着陸し、玉兔（ぎょくと）ローバーを展開。1972年以来初めて月面を走行した探査車となった。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E5%AB%A6%E5%A8%A53%E5%8F%B7",
     photoUrl: "/images/missions/change-3.jpg",
     photoCredit: "CNSA / CLEP",
   },
@@ -193,6 +205,7 @@ export const landingSites: LandingSite[] = [
     landingDate: "2019-01-03",
     description:
       "史上初の月の裏側への軟着陸を達成。フォン・カルマン・クレーターに着陸し、玉兔2号ローバーが現在も探査活動を継続中。中継衛星「鵲橋」を介して通信を行っている。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E5%AB%A6%E5%A8%A54%E5%8F%B7",
     photoUrl: "/images/missions/change-4.png",
     photoCredit: "CNSA / CLEP",
   },
@@ -207,6 +220,7 @@ export const landingSites: LandingSite[] = [
     landingDate: "2020-12-01",
     description:
       "中国初のサンプルリターンミッション。呂姆克山近くに着陸し、約1.73kgの月のサンプルを採取して地球に持ち帰ることに成功した。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E5%AB%A6%E5%A8%A55%E5%8F%B7",
     photoUrl: "/images/missions/change-5.jpg",
     photoCredit: "CNSA / CLEP",
   },
@@ -221,6 +235,7 @@ export const landingSites: LandingSite[] = [
     landingDate: "2024-06-01",
     description:
       "月の裏側（南極エイトケン盆地のアポロ・クレーター）から史上初のサンプル採取・帰還に成功。約1.9kgのサンプルを地球に持ち帰った。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E5%AB%A6%E5%A8%A56%E5%8F%B7",
     photoUrl: "/images/missions/change-6.jpg",
     photoCredit: "CNSA / CLEP",
   },
@@ -235,6 +250,7 @@ export const landingSites: LandingSite[] = [
     landingDate: "2023-08-23",
     description:
       "インド初の月面軟着陸成功ミッション。月の南極付近に着陸し、プラギャン・ローバーが14日間にわたって探査活動を実施。インドは世界で4番目に月面着陸に成功した国となった。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E3%83%81%E3%83%A3%E3%83%B3%E3%83%89%E3%83%A9%E3%83%BC%E3%83%A4%E3%83%BC%E3%83%B33%E5%8F%B7",
     photoUrl: "/images/missions/chandrayaan-3.png",
     photoCredit: "ISRO",
   },
@@ -263,6 +279,7 @@ export const landingSites: LandingSite[] = [
     lat: 32.59,
     lon: 19.37,
     description: "SpaceILと民間企業が開発したイスラエル初の月探査機。晴れの海への着陸を試みたが、最終降下中にエンジンが停止して墜落。民間資金のみで開発された初の月探査機として注目を集めた。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E3%83%99%E3%83%AC%E3%82%B7%E3%83%BC%E3%83%88_(%E5%AE%87%E5%AE%99%E8%88%B9)",
     photoUrl: "/images/missions/beresheet.jpg",
     photoCredit: "SpaceIL / IAI",
   },
@@ -276,6 +293,7 @@ export const landingSites: LandingSite[] = [
     lat: -70.881,
     lon: 22.784,
     description: "インドの月南極探査ミッション。着陸機「ヴィクラム」は最終降下中に通信が途絶え墜落した。軌道船は現在も周回を継続。この失敗を教訓にChandrayaan-3が2023年に成功した。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E3%83%81%E3%83%A3%E3%83%B3%E3%83%89%E3%83%A9%E3%83%BC%E3%83%A4%E3%83%BC%E3%83%B32%E5%8F%B7",
     photoUrl: "/images/missions/chandrayaan-2.jpg",
     photoCredit: "ISRO",
   },
@@ -289,6 +307,7 @@ export const landingSites: LandingSite[] = [
     lat: 47.5,
     lon: 44.4,
     description: "日本のispace社が開発した民間月面着陸機（1号機）。アトラス・クレーターへの着陸を試みたが、降下中に高度計の誤作動で燃料を使い果たし墜落。商業月面輸送の先駆けとして道を切り開いた。",
+    articleUrl: "https://ja.wikipedia.org/wiki/HAKUTO-R",
     photoUrl: "/images/missions/hakuto-r-m1.jpg",
     photoCredit: "ispace",
   },
@@ -302,6 +321,7 @@ export const landingSites: LandingSite[] = [
     lat: 60.4,
     lon: 10.2,
     description: "ispace社の2機目の月面着陸機「レジリエンス」。フリゴリス海への着陸を試みたが、動力降下中に制御を失い墜落。2回連続の失敗となったが、商業月面輸送実現に向けた貴重な運用データを収集した。",
+    articleUrl: "https://ja.wikipedia.org/wiki/HAKUTO-R",
     photoUrl: "/images/missions/hakuto-r-m2.jpg",
     photoCredit: "ispace",
   },
@@ -315,6 +335,7 @@ export const landingSites: LandingSite[] = [
     lat: -57.865,
     lon: 61.361,
     description: "ソ連崩壊後初のロシア月面探査機（旧ソ連以来47年ぶり）。月南極付近への着陸を試みたが、軌道修正中に推力過剰で制御不能となり墜落した。",
+    articleUrl: "https://ja.wikipedia.org/wiki/%E3%83%AB%E3%83%8A25",
     photoUrl: "/images/missions/luna-25.jpg",
     photoCredit: "Roscosmos",
   },
@@ -329,6 +350,7 @@ export const landingSites: LandingSite[] = [
     landingDate: "2024-02-22",
     description:
       "インテュイティブ・マシンズ社が開発した商業月着陸機。2024年2月22日に月の南極付近に着陸し、民間企業として初の月面着陸成功を達成。着陸時に横転したが交信には成功した。",
+    articleUrl: "https://ja.wikipedia.org/wiki/IM-1",
     photoUrl: "/images/missions/nova-c-odysseus.jpg",
     photoCredit: "Intuitive Machines / NASA",
   },
@@ -342,6 +364,7 @@ export const landingSites: LandingSite[] = [
     lat: 18.6,
     lon: 57.5,
     description: "ファイアフライ・エアロスペース社が開発した商業月着陸機。2025年3月に危機の海への着陸に成功。NASAの商業月面輸送サービス（CLPS）のもと10の科学機器を月面に届け、満月期を乗り越えて14日間以上稼働した。",
+    articleUrl: "https://en.wikipedia.org/wiki/Blue_Ghost_Mission_1",
     photoUrl: "/images/missions/blue-ghost.png",
     photoCredit: "Firefly Aerospace / NASA",
   },
