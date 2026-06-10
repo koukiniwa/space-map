@@ -303,39 +303,6 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
         markerEntries.push({ dot, ring, glow, label, hitArea, site })
       }
 
-      // ── Polar axis ─────────────────────────────────────────
-      {
-        // Thin axis rod from S to N pole
-        const axisMat = new THREE.MeshBasicMaterial({ color: 0x555577, transparent: true, opacity: 0.5 })
-        const axisRod = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 2.6, 8), axisMat)
-        moonGroup.add(axisRod)
-
-        // Pole label helper
-        const makePoleLabel = (text: string, color: string): THREE.Sprite => {
-          const cv = document.createElement("canvas")
-          cv.width = 64; cv.height = 64
-          const cx = cv.getContext("2d")!
-          cx.beginPath()
-          cx.arc(32, 32, 28, 0, Math.PI * 2)
-          cx.fillStyle = color
-          cx.fill()
-          cx.font = "bold 32px monospace"
-          cx.fillStyle = "#ffffff"
-          cx.textAlign = "center"
-          cx.textBaseline = "middle"
-          cx.fillText(text, 32, 33)
-          const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-            map: new THREE.CanvasTexture(cv), transparent: true, depthTest: false,
-          }))
-          sprite.scale.set(0.10, 0.10, 1)
-          return sprite
-        }
-        const nLabel = makePoleLabel("N", "#3b82f6")
-        nLabel.position.set(0, 1.38, 0)
-        const sLabel = makePoleLabel("S", "#ef4444")
-        sLabel.position.set(0, -1.38, 0)
-        moonGroup.add(nLabel, sLabel)
-      }
 
       setLoading(false)
 
@@ -347,10 +314,11 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
       const rotV      = { x: 0, y: 0 }
       // Use component-level ref so activeSite useEffect can read current angles
       const spherical = sphericalRef.current
-      // Start facing the nearside of the Moon (lon=0°) where most landings occurred
+      // Start facing the nearside of the Moon, with a slight globe-like tilt
       spherical.theta = -Math.PI / 2
-      spherical.phi   = 0
+      spherical.phi   = -0.35   // ~20° tilt like a classic globe
       moonGroup.rotation.y = spherical.theta
+      moonGroup.rotation.x = spherical.phi
       let lastHoverMs  = 0
 
       const raycaster = new THREE.Raycaster()
@@ -374,7 +342,6 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
           rotV.y = dx * 0.005
           spherical.phi   += dy * 0.005
           spherical.theta += dx * 0.005
-          spherical.phi = Math.max(-Math.PI / 2 + 0.05, Math.min(Math.PI / 2 - 0.05, spherical.phi))
           moonGroup.rotation.x = spherical.phi
           moonGroup.rotation.y = spherical.theta
           prevMouse = { x: e.clientX, y: e.clientY }
@@ -498,8 +465,7 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
           if (Math.abs(rotV.x) > 0.00005 || Math.abs(rotV.y) > 0.00005) {
             spherical.phi   += rotV.x
             spherical.theta += rotV.y
-            spherical.phi = Math.max(-Math.PI / 2 + 0.05, Math.min(Math.PI / 2 - 0.05, spherical.phi))
-            moonGroup.rotation.x = spherical.phi
+              moonGroup.rotation.x = spherical.phi
             moonGroup.rotation.y = spherical.theta
             rotV.x *= 0.93
             rotV.y *= 0.93
