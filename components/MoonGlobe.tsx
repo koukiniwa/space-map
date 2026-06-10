@@ -182,12 +182,18 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
         t.anisotropy = maxAniso
         return t
       }
+      // Load 2K preview immediately, then swap to 8K when ready
       const moonMat = new THREE.MeshStandardMaterial({
-        map:       loadTex("/textures/moon.jpg"),
+        map:       loadTex("/textures/moon-preview.jpg"),
         bumpMap:   loadTex("/textures/moon-bump.jpg"),
         bumpScale: 0.06,
         roughness: 0.9,
         metalness: 0.0,
+      })
+      loader.load("/textures/moon.jpg", (tex) => {
+        tex.anisotropy = maxAniso
+        moonMat.map = tex
+        moonMat.needsUpdate = true
       })
       const moon = new THREE.Mesh(new THREE.SphereGeometry(1, 256, 256), moonMat)
 
