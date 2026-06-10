@@ -303,6 +303,37 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
         markerEntries.push({ dot, ring, glow, label, hitArea, site })
       }
 
+      // ── Polar axis ─────────────────────────────────────────
+      {
+        const axisMat = new THREE.MeshBasicMaterial({ color: 0x6666aa, transparent: true, opacity: 0.55 })
+        const axisRod = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 2.6, 8), axisMat)
+        moonGroup.add(axisRod)
+
+        const makePoleLabel = (text: string, color: string): THREE.Sprite => {
+          const cv = document.createElement("canvas")
+          cv.width = 64; cv.height = 64
+          const cx = cv.getContext("2d")!
+          cx.beginPath()
+          cx.arc(32, 32, 28, 0, Math.PI * 2)
+          cx.fillStyle = color
+          cx.fill()
+          cx.font = "bold 30px monospace"
+          cx.fillStyle = "#ffffff"
+          cx.textAlign = "center"
+          cx.textBaseline = "middle"
+          cx.fillText(text, 32, 33)
+          const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+            map: new THREE.CanvasTexture(cv), transparent: true, depthTest: true,
+          }))
+          sprite.scale.set(0.10, 0.10, 1)
+          return sprite
+        }
+        const nLabel = makePoleLabel("N", "#3b82f6")
+        nLabel.position.set(0, 1.38, 0)
+        const sLabel = makePoleLabel("S", "#ef4444")
+        sLabel.position.set(0, -1.38, 0)
+        moonGroup.add(nLabel, sLabel)
+      }
 
       setLoading(false)
 
