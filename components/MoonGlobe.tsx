@@ -111,8 +111,8 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
       container.appendChild(renderer.domElement)
 
       // ── Lights ─────────────────────────────────────────────
-      scene.add(new THREE.AmbientLight(0xffffff, 0.08))
-      const dirLight = new THREE.DirectionalLight(0xffffff, 2.0)
+      scene.add(new THREE.AmbientLight(0xffffff, 0.15))
+      const dirLight = new THREE.DirectionalLight(0xffffff, 3.5)
       dirLight.position.set(6, 0.5, 1)
       scene.add(dirLight)
 
@@ -182,10 +182,12 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
         t.anisotropy = maxAniso
         return t
       }
-      const moonMat = new THREE.MeshPhongMaterial({
-        map:      loadTex("/textures/moon.jpg"),
-        bumpMap:  loadTex("/textures/moon-bump.jpg"),
-        bumpScale: 0.8,
+      const moonMat = new THREE.MeshStandardMaterial({
+        map:       loadTex("/textures/moon.jpg"),
+        bumpMap:   loadTex("/textures/moon-bump.jpg"),
+        bumpScale: 0.06,
+        roughness: 0.9,
+        metalness: 0.0,
       })
       const moon = new THREE.Mesh(new THREE.SphereGeometry(1, 256, 256), moonMat)
 
