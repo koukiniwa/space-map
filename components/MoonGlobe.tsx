@@ -544,7 +544,7 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
           }
         } else if (autoRotate && !pausedRef.current) {
           _tmpQ.setFromAxisAngle(_yAxis, 0.001)
-          moonGroup.quaternion.premultiply(_tmpQ)
+          moonGroup.quaternion.multiply(_tmpQ)
         } else if (!isDragging) {
           // Inertia: coast after drag release
           if (Math.abs(rotV.x) > 0.00005 || Math.abs(rotV.y) > 0.00005) {
