@@ -431,24 +431,27 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
       const hitMat = new THREE.MeshBasicMaterial({ visible: false })
 
       const makeFlag = (site: LandingSite): THREE.Sprite => {
-        const W = 64, H = 42
+        // Canvas = flag (top half) + transparent padding (bottom half)
+        // This shifts the sprite pivot to the flag's bottom edge,
+        // so the flag floats above the pin dot without overlapping it.
+        const FW = 64, FH = 42
+        const W = FW, H = FH * 2   // bottom half is transparent
         const cv = document.createElement("canvas")
         cv.width = W; cv.height = H
         const cx = cv.getContext("2d")!
 
         cx.globalAlpha = site.status === 'lost' ? 0.55 : 1.0
         const draw = FLAG_DRAWERS[site.country]
-        if (draw) draw(cx, 0, 0, W, H)
-        else { cx.fillStyle = '#666'; cx.fillRect(0, 0, W, H) }
-        // border
+        if (draw) draw(cx, 0, 0, FW, FH)
+        else { cx.fillStyle = '#666'; cx.fillRect(0, 0, FW, FH) }
         cx.globalAlpha = site.status === 'lost' ? 0.4 : 0.8
         cx.strokeStyle = 'rgba(255,255,255,0.65)'; cx.lineWidth = 1.5
-        cx.strokeRect(0.75, 0.75, W - 1.5, H - 1.5)
+        cx.strokeRect(0.75, 0.75, FW - 1.5, FH - 1.5)
         cx.globalAlpha = 1.0
 
         const mat = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthTest: true, sizeAttenuation: true })
         const sprite = new THREE.Sprite(mat)
-        sprite.scale.set(0.09, 0.059, 1)   // 64:42 aspect ratio
+        sprite.scale.set(0.09, 0.118, 1)  // full canvas height (42×2=84 → 0.059×2)
         return sprite
       }
 
