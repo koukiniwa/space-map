@@ -64,7 +64,7 @@ const FLAG_DRAWERS: Record<string, FlagDraw> = {
     cx.fillStyle = '#FFDE00'; cx.font = `bold ${h * .6}px sans-serif`; cx.textAlign = 'center'; cx.textBaseline = 'middle'
     cx.fillText('★', x + w * .28, y + h * .42)
     cx.font = `${h * .28}px sans-serif`
-    [[.62, .22], [.75, .32], [.75, .55], [.62, .65]].forEach(([px, py]) => cx.fillText('★', x + w * px, y + h * py))
+    ;([[.62, .22], [.75, .32], [.75, .55], [.62, .65]] as [number, number][]).forEach(([px, py]) => cx.fillText('★', x + w * px, y + h * py))
   },
   "インド": (cx, x, y, w, h) => {
     ['#FF9933', '#FFFFFF', '#138808'].forEach((c, i) => { cx.fillStyle = c; cx.fillRect(x, y + i * h / 3, w, h / 3 + 1) })
