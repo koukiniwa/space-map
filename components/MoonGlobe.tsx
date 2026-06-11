@@ -75,8 +75,7 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
   const mountRef      = useRef<HTMLDivElement>(null)
   const zoomRef       = useRef({ in: () => {}, out: () => {} })
   const pausedRef     = useRef(false)
-  const sphericalRef  = useRef({ theta: 0, phi: 0 })
-  const targetRef     = useRef<{ theta: number; phi: number } | null>(null)
+  const targetRef     = useRef<{ x: number; y: number; z: number } | null>(null)
   const activeSiteRef = useRef<LandingSite | null>(null)
   const [loading, setLoading]           = useState(true)
   const [webglOk, setWebglOk]           = useState(true)
@@ -87,24 +86,16 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
   useEffect(() => { pausedRef.current = !!paused }, [paused])
   useEffect(() => { activeSiteRef.current = activeSite ?? null }, [activeSite])
 
-  // Compute target rotation when activeSite changes
+  // Store target site normal (unit vector in moon-local space) when activeSite changes
   useEffect(() => {
     if (!activeSite) { targetRef.current = null; return }
-    const phiGeo   = (90 - activeSite.lat) * Math.PI / 180
-    const thetaGeo = (activeSite.lon + 180) * Math.PI / 180
-    const px = -Math.sin(phiGeo) * Math.cos(thetaGeo)
-    const py =  Math.cos(phiGeo)
-    const pz =  Math.sin(phiGeo) * Math.sin(thetaGeo)
-    // Y-rotation that brings site to +Z face
-    const targetTheta = Math.atan2(-px, pz)
-    // X-rotation (tilt) to center latitude
-    const targetPhi   = Math.atan2(py, Math.sqrt(px * px + pz * pz))
-    // Find shortest path from current theta
-    const cur = sphericalRef.current
-    let dTheta = targetTheta - cur.theta
-    while (dTheta >  Math.PI) dTheta -= 2 * Math.PI
-    while (dTheta < -Math.PI) dTheta += 2 * Math.PI
-    targetRef.current = { theta: cur.theta + dTheta, phi: targetPhi }
+    const phi   = (90 - activeSite.lat) * Math.PI / 180
+    const theta = (activeSite.lon + 180) * Math.PI / 180
+    const x = -Math.sin(phi) * Math.cos(theta)
+    const y =  Math.cos(phi)
+    const z =  Math.sin(phi) * Math.sin(theta)
+    const len = Math.sqrt(x * x + y * y + z * z)
+    targetRef.current = { x: x / len, y: y / len, z: z / len }
   }, [activeSite])
 
   // keep ref in sync
@@ -413,13 +404,12 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
       let prevMouse    = { x: 0, y: 0 }
       let mouseDownPos = { x: 0, y: 0 }
       const rotV      = { x: 0, y: 0 }
-      // Use component-level ref so activeSite useEffect can read current angles
-      const spherical = sphericalRef.current
+      // World-space rotation axes (constant — camera is always at +Z)
+      const _yAxis = new THREE.Vector3(0, 1, 0)
+      const _xAxis = new THREE.Vector3(1, 0, 0)
+      const _tmpQ  = new THREE.Quaternion()
       // Start facing the nearside of the Moon, with a slight globe-like tilt
-      spherical.theta = -Math.PI / 2
-      spherical.phi   = -0.35   // ~20° tilt like a classic globe
-      moonGroup.rotation.y = spherical.theta
-      moonGroup.rotation.x = spherical.phi
+      moonGroup.quaternion.setFromEuler(new THREE.Euler(-0.35, -Math.PI / 2, 0, 'XYZ'))
       let lastHoverMs  = 0
 
       const raycaster = new THREE.Raycaster()
@@ -441,10 +431,10 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
           const dy = e.clientY - prevMouse.y
           rotV.x = dy * 0.005
           rotV.y = dx * 0.005
-          spherical.phi   += dy * 0.005
-          spherical.theta += dx * 0.005
-          moonGroup.rotation.x = spherical.phi
-          moonGroup.rotation.y = spherical.theta
+          _tmpQ.setFromAxisAngle(_yAxis, dx * 0.005)
+          moonGroup.quaternion.premultiply(_tmpQ)
+          _tmpQ.setFromAxisAngle(_xAxis, dy * 0.005)
+          moonGroup.quaternion.premultiply(_tmpQ)
           prevMouse = { x: e.clientX, y: e.clientY }
           return
         }
@@ -512,11 +502,10 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
         if (!isDragging || e.touches.length !== 1) return
         const dx = e.touches[0].clientX - prevMouse.x
         const dy = e.touches[0].clientY - prevMouse.y
-        spherical.phi   += dy * 0.005
-        spherical.theta += dx * 0.005
-        spherical.phi = Math.max(-Math.PI / 2 + 0.05, Math.min(Math.PI / 2 - 0.05, spherical.phi))
-        moonGroup.rotation.x = spherical.phi
-        moonGroup.rotation.y = spherical.theta
+        _tmpQ.setFromAxisAngle(_yAxis, dx * 0.005)
+        moonGroup.quaternion.premultiply(_tmpQ)
+        _tmpQ.setFromAxisAngle(_xAxis, dy * 0.005)
+        moonGroup.quaternion.premultiply(_tmpQ)
         prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY }
       }
       const onTouchEnd = () => { isDragging = false }
@@ -544,30 +533,25 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
         t += 0.016
 
         if (targetRef.current && !isDragging) {
-          // Smoothly rotate globe to center the selected site
-          const tgt = targetRef.current
-          const LERP = 0.07
-          const dTheta = tgt.theta - spherical.theta
-          const dPhi   = tgt.phi   - spherical.phi
-          spherical.theta += dTheta * LERP
-          spherical.phi   += dPhi   * LERP
-          spherical.phi    = Math.max(-Math.PI / 2 + 0.05, Math.min(Math.PI / 2 - 0.05, spherical.phi))
-          moonGroup.rotation.x = spherical.phi
-          moonGroup.rotation.y = spherical.theta
-          // Stop when close enough
-          if (Math.abs(dTheta) < 0.002 && Math.abs(dPhi) < 0.002) {
+          // Slerp to target quaternion that brings the site to face the camera (+Z)
+          const n = targetRef.current
+          const siteVec = new THREE.Vector3(n.x, n.y, n.z)
+          const targetQuat = new THREE.Quaternion().setFromUnitVectors(siteVec, new THREE.Vector3(0, 0, 1))
+          moonGroup.quaternion.slerp(targetQuat, 0.07)
+          if (moonGroup.quaternion.angleTo(targetQuat) < 0.005) {
+            moonGroup.quaternion.copy(targetQuat)
             targetRef.current = null
           }
         } else if (autoRotate && !pausedRef.current) {
-          moonGroup.rotation.y += 0.001
-          spherical.theta = moonGroup.rotation.y
+          _tmpQ.setFromAxisAngle(_yAxis, 0.001)
+          moonGroup.quaternion.premultiply(_tmpQ)
         } else if (!isDragging) {
           // Inertia: coast after drag release
           if (Math.abs(rotV.x) > 0.00005 || Math.abs(rotV.y) > 0.00005) {
-            spherical.phi   += rotV.x
-            spherical.theta += rotV.y
-              moonGroup.rotation.x = spherical.phi
-            moonGroup.rotation.y = spherical.theta
+            _tmpQ.setFromAxisAngle(_yAxis, rotV.y)
+            moonGroup.quaternion.premultiply(_tmpQ)
+            _tmpQ.setFromAxisAngle(_xAxis, rotV.x)
+            moonGroup.quaternion.premultiply(_tmpQ)
             rotV.x *= 0.93
             rotV.y *= 0.93
           }
