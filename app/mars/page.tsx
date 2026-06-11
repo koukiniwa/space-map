@@ -197,6 +197,8 @@ export default function MarsPage() {
           canNext={selectedIdx >= 0 && selectedIdx < filteredSites.length - 1}
           onPrev={handlePrev}
           onNext={handleNext}
+          noImageIcon="🔴"
+          copyUrlBase="/mars"
         />
       </div>
 

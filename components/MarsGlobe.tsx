@@ -21,11 +21,6 @@ function latLonToVec3(lat: number, lon: number, radius: number) {
   }
 }
 
-const STATUS_COLOR: Record<LandingSite["status"], number> = {
-  active:   0x22c55e,
-  inactive: 0xfbbf24,
-  lost:     0xef4444,
-}
 const STATUS_CSS: Record<LandingSite["status"], string> = {
   active:   "#22c55e",
   inactive: "#fbbf24",
@@ -257,19 +252,6 @@ export default function MarsGlobe({ sites, onSelectSite, paused, activeSite }: M
       const marsGroup = new THREE.Group()
       marsGroup.add(mars)
       scene.add(marsGroup)
-
-      // ── Glow texture (shared) ──────────────────────────────
-      const glowCanvas = document.createElement("canvas")
-      glowCanvas.width = glowCanvas.height = 64
-      const gc = glowCanvas.getContext("2d")!
-      const grad = gc.createRadialGradient(32, 32, 0, 32, 32, 32)
-      grad.addColorStop(0,    "rgba(255,255,255,1)")
-      grad.addColorStop(0.25, "rgba(255,255,255,0.6)")
-      grad.addColorStop(1,    "rgba(255,255,255,0)")
-      gc.fillStyle = grad
-      gc.fillRect(0, 0, 64, 64)
-      const glowTex = new THREE.CanvasTexture(glowCanvas)
-      void glowTex  // suppress unused warning
 
       // ── Label texture builder ──────────────────────────────
       const makeLabel = (site: LandingSite): THREE.Sprite => {

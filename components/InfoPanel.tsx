@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react'
 import { LandingSite } from '@/data/lunar-sites'
 
 interface InfoPanelProps {
-  site:       LandingSite | null
-  onClose:    () => void
-  canPrev:    boolean
-  canNext:    boolean
-  onPrev:     () => void
-  onNext:     () => void
+  site:            LandingSite | null
+  onClose:         () => void
+  canPrev:         boolean
+  canNext:         boolean
+  onPrev:          () => void
+  onNext:          () => void
+  noImageIcon?:    string   // emoji shown when photo is missing (default 🌕)
+  copyUrlBase?:    string   // URL base for copy button (default '/moon')
 }
 
 const STATUS_LABEL: Record<LandingSite['status'], string> = {
@@ -28,7 +30,7 @@ const STATUS_DOT: Record<LandingSite['status'], string> = {
   lost:     'bg-red-400',
 }
 
-export default function InfoPanel({ site, onClose, canPrev, canNext, onPrev, onNext }: InfoPanelProps) {
+export default function InfoPanel({ site, onClose, canPrev, canNext, onPrev, onNext, noImageIcon = '🌕', copyUrlBase = '/moon' }: InfoPanelProps) {
   const [imgErr, setImgErr] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -36,7 +38,7 @@ export default function InfoPanel({ site, onClose, canPrev, canNext, onPrev, onN
 
   const handleCopyUrl = () => {
     if (!site) return
-    const url = `${window.location.origin}/moon?site=${site.id}`
+    const url = `${window.location.origin}${copyUrlBase}?site=${site.id}`
     navigator.clipboard.writeText(url).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
@@ -67,7 +69,7 @@ export default function InfoPanel({ site, onClose, canPrev, canNext, onPrev, onN
               />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center gap-1 text-zinc-600">
-                <span className="text-3xl">🌕</span>
+                <span className="text-3xl">{noImageIcon}</span>
                 <span className="text-[10px] font-mono tracking-wider">NO IMAGE</span>
               </div>
             )}
