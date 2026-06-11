@@ -2,17 +2,18 @@
 
 import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
-import { landingSites, LandingSite } from '@/data/lunar-sites'
+import { marsSites } from '@/data/mars-sites'
+import type { LandingSite } from '@/data/lunar-sites'
 import InfoPanel from '@/components/InfoPanel'
 import MissionList from '@/components/MissionList'
 
-const MoonGlobe = dynamic(() => import('@/components/MoonGlobe'), {
+const MarsGlobe = dynamic(() => import('@/components/MarsGlobe'), {
   ssr: false,
   loading: () => (
     <div className="flex-1 flex items-center justify-center bg-black">
       <div className="flex flex-col items-center gap-4 font-mono text-zinc-400">
         <div className="w-10 h-10 border-2 border-zinc-600 border-t-white rounded-full animate-spin" />
-        <span className="text-sm">月面マップを読み込み中...</span>
+        <span className="text-sm">火星マップを読み込み中...</span>
       </div>
     </div>
   ),
@@ -29,19 +30,18 @@ const STATUS_LABEL: Record<LandingSite['status'], string> = {
   lost:     '消息不明',
 }
 
-export default function MoonPage() {
-  const [selectedSite,  setSelectedSite]  = useState<LandingSite | null>(null)
+export default function MarsPage() {
+  const [selectedSite, setSelectedSite] = useState<LandingSite | null>(null)
   const [era,    setEra]    = useState('all')
-  const [result, setResult] = useState('all') // 'all' | 'success' | 'failure'
+  const [result, setResult] = useState('all')
 
-  // ── Filtered sites ──────────────────────────────────────
   const ERA_RANGE: Record<string, [number, number]> = {
-    all:     [1966, 2030],
-    coldwar: [1966, 1976],
-    modern:  [2013, 2030],
+    all:     [1970, 2030],
+    coldwar: [1970, 1990],
+    modern:  [1997, 2030],
   }
-  const [yearMin, yearMax] = ERA_RANGE[era] ?? [1966, 2030]
-  const filteredSites = landingSites
+  const [yearMin, yearMax] = ERA_RANGE[era] ?? [1970, 2030]
+  const filteredSites = marsSites
     .filter(s => s.year >= yearMin && s.year <= yearMax)
     .filter(s => {
       if (result === 'success') return s.status !== 'lost'
@@ -54,7 +54,6 @@ export default function MoonPage() {
       return da < db ? -1 : da > db ? 1 : 0
     })
 
-  // フィルター変更で選択中サイトが非表示になったら閉じる
   useEffect(() => {
     if (selectedSite && !filteredSites.find(s => s.id === selectedSite.id)) {
       handleSelectSite(null)
@@ -62,24 +61,21 @@ export default function MoonPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredSites])
 
-  // ── URL state: read on mount ────────────────────────────
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const id = params.get('site')
     if (id) {
-      const site = landingSites.find(s => s.id === id)
+      const site = marsSites.find(s => s.id === id)
       if (site) setSelectedSite(site)
     }
   }, [])
 
-  // ── Handlers ────────────────────────────────────────────
   const handleSelectSite = (site: LandingSite | null) => {
     setSelectedSite(site)
-    const url = site ? `/moon?site=${site.id}` : '/moon'
+    const url = site ? `/mars?site=${site.id}` : '/mars'
     window.history.replaceState({}, '', url)
   }
 
-  // ── ESC key to close InfoPanel ──────────────────────────
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') handleSelectSite(null)
@@ -89,7 +85,6 @@ export default function MoonPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // ── Prev / Next navigation ──────────────────────────────
   const selectedIdx = selectedSite
     ? filteredSites.findIndex(s => s.id === selectedSite.id)
     : -1
@@ -101,15 +96,13 @@ export default function MoonPage() {
       handleSelectSite(filteredSites[selectedIdx + 1])
   }
 
-  // ── Stats ───────────────────────────────────────────────
-  const activeCount   = filteredSites.filter(s => s.status === 'active').length
-  const lostCount     = filteredSites.filter(s => s.status === 'lost').length
-  const countryCount  = new Set(filteredSites.map(s => s.country)).size
-  const yearSpan      = filteredSites.length > 0
+  const activeCount  = filteredSites.filter(s => s.status === 'active').length
+  const lostCount    = filteredSites.filter(s => s.status === 'lost').length
+  const countryCount = new Set(filteredSites.map(s => s.country)).size
+  const yearSpan     = filteredSites.length > 0
     ? `${Math.min(...filteredSites.map(s => s.year))}〜${Math.max(...filteredSites.map(s => s.year))}`
     : '—'
 
-  // ── Globe view ──────────────────────────────────────────
   return (
     <div className="flex flex-col h-screen bg-black overflow-hidden font-mono">
 
@@ -117,13 +110,13 @@ export default function MoonPage() {
       <header className="flex items-center justify-between px-5 py-2.5 border-b border-zinc-800 flex-shrink-0 gap-4">
         <div className="flex items-center gap-3 flex-shrink-0">
           <h1 className="text-white text-base font-bold tracking-widest whitespace-nowrap">
-            月面探査機マップ
+            火星探査機マップ
           </h1>
           <a
-            href="/mars"
+            href="/moon"
             className="text-[10px] text-zinc-500 hover:text-zinc-300 border border-zinc-700 hover:border-zinc-500 px-2 py-0.5 rounded transition-colors whitespace-nowrap"
           >
-            火星マップ ↗
+            月面マップ ↗
           </a>
           <a
             href="https://www.uchu-bin.jp"
@@ -179,10 +172,8 @@ export default function MoonPage() {
 
       {/* ── Main content ── */}
       <div className="flex flex-1 overflow-hidden relative">
-
-        {/* Left sidebar */}
         <MissionList
-          allSites={landingSites}
+          allSites={marsSites}
           filteredSites={filteredSites}
           selectedSite={selectedSite}
           onSelect={handleSelectSite}
@@ -192,15 +183,13 @@ export default function MoonPage() {
           onResult={setResult}
         />
 
-        {/* Globe */}
-        <MoonGlobe
+        <MarsGlobe
           sites={filteredSites}
           onSelectSite={handleSelectSite}
           paused={selectedSite !== null}
           activeSite={selectedSite}
         />
 
-        {/* Right info panel */}
         <InfoPanel
           site={selectedSite}
           onClose={() => handleSelectSite(null)}
