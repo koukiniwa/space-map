@@ -38,49 +38,116 @@ const STATUS_LABEL: Record<LandingSite["status"], string> = {
 }
 
 type FlagDraw = (cx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) => void
+
+// Draw a proper 5-pointed star centered at (cx,cy) with outer radius r
+const drawStar5 = (ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number) => {
+  const inner = r * 0.38
+  ctx.beginPath()
+  for (let i = 0; i < 10; i++) {
+    const a = (i * Math.PI / 5) - Math.PI / 2
+    const d = i % 2 === 0 ? r : inner
+    if (i === 0) ctx.moveTo(cx + d * Math.cos(a), cy + d * Math.sin(a))
+    else ctx.lineTo(cx + d * Math.cos(a), cy + d * Math.sin(a))
+  }
+  ctx.closePath(); ctx.fill()
+}
+
 const FLAG_DRAWERS: Record<string, FlagDraw> = {
   "ソビエト連邦": (cx, x, y, w, h) => {
     cx.fillStyle = '#CC0000'; cx.fillRect(x, y, w, h)
-    cx.fillStyle = '#FFD700'; cx.font = `bold ${h * .7}px sans-serif`
-    cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText('★', x + w / 2, y + h / 2)
+    cx.fillStyle = '#FFD700'
+    drawStar5(cx, x + w * 0.22, y + h * 0.27, h * 0.20)
+    // sickle
+    cx.strokeStyle = '#FFD700'; cx.lineWidth = h * 0.08; cx.lineCap = 'round'
+    cx.beginPath(); cx.arc(x + w * 0.30, y + h * 0.72, h * 0.16, Math.PI * 1.05, Math.PI * 1.85); cx.stroke()
+    // hammer head
+    cx.lineWidth = h * 0.09
+    cx.beginPath(); cx.moveTo(x + w * 0.13, y + h * 0.73); cx.lineTo(x + w * 0.26, y + h * 0.57); cx.stroke()
+    // hammer handle
+    cx.lineWidth = h * 0.07
+    cx.beginPath(); cx.moveTo(x + w * 0.19, y + h * 0.67); cx.lineTo(x + w * 0.36, y + h * 0.90); cx.stroke()
   },
   "ロシア": (cx, x, y, w, h) => {
-    ['#FFFFFF', '#0039A6', '#D52B1E'].forEach((c, i) => { cx.fillStyle = c; cx.fillRect(x, y + i * h / 3, w, h / 3 + 1) })
+    (['#FFFFFF', '#0039A6', '#D52B1E'] as string[]).forEach((c, i) => {
+      cx.fillStyle = c; cx.fillRect(x, y + i * h / 3, w, h / 3 + 1)
+    })
   },
   "アメリカ": (cx, x, y, w, h) => {
-    for (let i = 0; i < 6; i++) { cx.fillStyle = i % 2 === 0 ? '#B22234' : '#FFFFFF'; cx.fillRect(x, y + i * h / 6, w, h / 6 + 1) }
-    cx.fillStyle = '#3C3B6E'; cx.fillRect(x, y, w * .45, h * .5)
-    cx.fillStyle = '#FFFFFF'; cx.font = `${h * .35}px sans-serif`; cx.textAlign = 'center'; cx.textBaseline = 'middle'
-    cx.fillText('★', x + w * .22, y + h * .24)
+    for (let i = 0; i < 13; i++) {
+      cx.fillStyle = i % 2 === 0 ? '#B22234' : '#FFFFFF'
+      cx.fillRect(x, y + i * h / 13, w, h / 13 + 1)
+    }
+    const cw = w * 0.40, ch = h * 7 / 13
+    cx.fillStyle = '#3C3B6E'; cx.fillRect(x, y, cw, ch)
+    cx.fillStyle = '#FFFFFF'
+    for (let row = 0; row < 4; row++)
+      for (let col = 0; col < 5; col++)
+        drawStar5(cx, x + cw * (col * 2 + 1) / 10, y + ch * (row * 2 + 1) / 8, h * 0.052)
   },
   "アメリカ（民間）": (cx, x, y, w, h) => {
-    for (let i = 0; i < 6; i++) { cx.fillStyle = i % 2 === 0 ? '#B22234' : '#FFFFFF'; cx.fillRect(x, y + i * h / 6, w, h / 6 + 1) }
-    cx.fillStyle = '#3C3B6E'; cx.fillRect(x, y, w * .45, h * .5)
-    cx.fillStyle = '#FFFFFF'; cx.font = `${h * .35}px sans-serif`; cx.textAlign = 'center'; cx.textBaseline = 'middle'
-    cx.fillText('★', x + w * .22, y + h * .24)
+    for (let i = 0; i < 13; i++) {
+      cx.fillStyle = i % 2 === 0 ? '#B22234' : '#FFFFFF'
+      cx.fillRect(x, y + i * h / 13, w, h / 13 + 1)
+    }
+    const cw = w * 0.40, ch = h * 7 / 13
+    cx.fillStyle = '#3C3B6E'; cx.fillRect(x, y, cw, ch)
+    cx.fillStyle = '#FFFFFF'
+    for (let row = 0; row < 4; row++)
+      for (let col = 0; col < 5; col++)
+        drawStar5(cx, x + cw * (col * 2 + 1) / 10, y + ch * (row * 2 + 1) / 8, h * 0.052)
   },
   "中国": (cx, x, y, w, h) => {
     cx.fillStyle = '#DE2910'; cx.fillRect(x, y, w, h)
-    cx.fillStyle = '#FFDE00'; cx.font = `bold ${h * .6}px sans-serif`; cx.textAlign = 'center'; cx.textBaseline = 'middle'
-    cx.fillText('★', x + w * .28, y + h * .42)
-    cx.font = `${h * .28}px sans-serif`
-    ;([[.62, .22], [.75, .32], [.75, .55], [.62, .65]] as [number, number][]).forEach(([px, py]) => cx.fillText('★', x + w * px, y + h * py))
+    cx.fillStyle = '#FFDE00'
+    drawStar5(cx, x + w * 0.25, y + h * 0.35, h * 0.26)
+    ;([[0.50, 0.10], [0.62, 0.22], [0.62, 0.48], [0.50, 0.60]] as [number, number][])
+      .forEach(([px, py]) => drawStar5(cx, x + w * px, y + h * py, h * 0.09))
   },
   "インド": (cx, x, y, w, h) => {
-    ['#FF9933', '#FFFFFF', '#138808'].forEach((c, i) => { cx.fillStyle = c; cx.fillRect(x, y + i * h / 3, w, h / 3 + 1) })
-    cx.strokeStyle = '#000080'; cx.lineWidth = 1.5
-    cx.beginPath(); cx.arc(x + w / 2, y + h / 2, h * .18, 0, Math.PI * 2); cx.stroke()
+    (['#FF9933', '#FFFFFF', '#138808'] as string[]).forEach((c, i) => {
+      cx.fillStyle = c; cx.fillRect(x, y + i * h / 3, w, h / 3 + 1)
+    })
+    const ox = x + w / 2, oy = y + h / 2, r = h * 0.15
+    cx.strokeStyle = '#000080'; cx.lineWidth = 1.0
+    cx.beginPath(); cx.arc(ox, oy, r, 0, Math.PI * 2); cx.stroke()
+    cx.fillStyle = '#000080'
+    cx.beginPath(); cx.arc(ox, oy, r * 0.14, 0, Math.PI * 2); cx.fill()
+    for (let i = 0; i < 24; i++) {
+      const a = i * Math.PI * 2 / 24
+      cx.beginPath()
+      cx.moveTo(ox + r * 0.14 * Math.cos(a), oy + r * 0.14 * Math.sin(a))
+      cx.lineTo(ox + r * Math.cos(a), oy + r * Math.sin(a))
+      cx.stroke()
+    }
   },
   "日本": (cx, x, y, w, h) => {
     cx.fillStyle = '#FFFFFF'; cx.fillRect(x, y, w, h)
-    cx.fillStyle = '#BC002D'; cx.beginPath(); cx.arc(x + w / 2, y + h / 2, h * .32, 0, Math.PI * 2); cx.fill()
+    cx.fillStyle = '#BC002D'
+    cx.beginPath(); cx.arc(x + w / 2, y + h / 2, h * 0.32, 0, Math.PI * 2); cx.fill()
   },
   "イスラエル": (cx, x, y, w, h) => {
     cx.fillStyle = '#FFFFFF'; cx.fillRect(x, y, w, h)
     cx.fillStyle = '#0038B8'
-    cx.fillRect(x, y + h * .18, w, h * .12); cx.fillRect(x, y + h * .70, w, h * .12)
-    cx.font = `${h * .45}px sans-serif`; cx.textAlign = 'center'; cx.textBaseline = 'middle'
-    cx.fillText('✡', x + w / 2, y + h / 2)
+    cx.fillRect(x, y + h * 0.18, w, h * 0.12)
+    cx.fillRect(x, y + h * 0.70, w, h * 0.12)
+    const scx = x + w / 2, scy = y + h / 2, r = h * 0.20
+    cx.strokeStyle = '#0038B8'; cx.lineWidth = h * 0.05; cx.lineJoin = 'round'
+    // upward triangle
+    cx.beginPath()
+    for (let i = 0; i < 3; i++) {
+      const a = -Math.PI / 2 + i * 2 * Math.PI / 3
+      i === 0 ? cx.moveTo(scx + r * Math.cos(a), scy + r * Math.sin(a))
+               : cx.lineTo(scx + r * Math.cos(a), scy + r * Math.sin(a))
+    }
+    cx.closePath(); cx.stroke()
+    // downward triangle
+    cx.beginPath()
+    for (let i = 0; i < 3; i++) {
+      const a = Math.PI / 2 + i * 2 * Math.PI / 3
+      i === 0 ? cx.moveTo(scx + r * Math.cos(a), scy + r * Math.sin(a))
+               : cx.lineTo(scx + r * Math.cos(a), scy + r * Math.sin(a))
+    }
+    cx.closePath(); cx.stroke()
   },
 }
 
@@ -364,36 +431,24 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
       const hitMat = new THREE.MeshBasicMaterial({ visible: false })
 
       const makeFlag = (site: LandingSite): THREE.Sprite => {
-        const W = 80, H = 120
-        const fw = 52, fh = 34       // flag rectangle dimensions
-        const fx = W / 2, fy = 8     // flag top-left (pole is at W/2)
+        const W = 64, H = 42
         const cv = document.createElement("canvas")
         cv.width = W; cv.height = H
         const cx = cv.getContext("2d")!
 
-        // Pole
-        const lost = site.status === 'lost'
-        cx.strokeStyle = lost ? 'rgba(180,100,100,0.75)' : 'rgba(210,210,210,0.9)'
-        cx.lineWidth = 2.5
-        cx.beginPath(); cx.moveTo(W / 2, H - 4); cx.lineTo(W / 2, fy); cx.stroke()
-
-        // Flag background
-        cx.globalAlpha = lost ? 0.55 : 1.0
+        cx.globalAlpha = site.status === 'lost' ? 0.55 : 1.0
         const draw = FLAG_DRAWERS[site.country]
-        if (draw) {
-          draw(cx, fx, fy, fw, fh)
-        } else {
-          cx.fillStyle = '#666'; cx.fillRect(fx, fy, fw, fh)
-        }
-        // Flag border
-        cx.globalAlpha = lost ? 0.4 : 0.7
-        cx.strokeStyle = 'rgba(255,255,255,0.5)'; cx.lineWidth = 1
-        cx.strokeRect(fx, fy, fw, fh)
+        if (draw) draw(cx, 0, 0, W, H)
+        else { cx.fillStyle = '#666'; cx.fillRect(0, 0, W, H) }
+        // border
+        cx.globalAlpha = site.status === 'lost' ? 0.4 : 0.8
+        cx.strokeStyle = 'rgba(255,255,255,0.65)'; cx.lineWidth = 1.5
+        cx.strokeRect(0.75, 0.75, W - 1.5, H - 1.5)
         cx.globalAlpha = 1.0
 
         const mat = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthTest: true, sizeAttenuation: true })
         const sprite = new THREE.Sprite(mat)
-        sprite.scale.set(0.09, 0.135, 1)
+        sprite.scale.set(0.09, 0.059, 1)   // 64:42 aspect ratio
         return sprite
       }
 
@@ -403,16 +458,20 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
         const normal = posVec.clone().normalize()
         const color  = STATUS_COLOR[site.status]
 
-        // Glow at surface base
+        // Small status pin dot (replaces large glow)
+        const pinCv = document.createElement("canvas")
+        pinCv.width = pinCv.height = 24
+        const pc = pinCv.getContext("2d")!
+        pc.beginPath(); pc.arc(12, 12, 9, 0, Math.PI * 2)
+        pc.fillStyle = STATUS_CSS[site.status]; pc.fill()
+        pc.strokeStyle = 'rgba(255,255,255,0.9)'; pc.lineWidth = 2.5; pc.stroke()
         const glow = new THREE.Sprite(new THREE.SpriteMaterial({
-          map: glowTex, color,
-          blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, depthTest: false,
+          map: new THREE.CanvasTexture(pinCv), transparent: true, depthTest: true, sizeAttenuation: true,
         }))
-        glow.scale.set(0.10, 0.10, 1)
+        glow.scale.set(0.038, 0.038, 1)
         glow.position.copy(posVec)
 
-        // Flag — lower center so pole base is ~0.02 below surface,
-        // moon geometry's depth buffer clips the buried portion naturally
+        // Flag (no pole) — floating just above surface
         const flag = makeFlag(site)
         flag.position.copy(normal.clone().multiplyScalar(1.04))
 
@@ -652,11 +711,11 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
           const isRunning = entry.site.status === "active"
 
           if (isHovered) {
-            entry.glow.scale.setScalar(0.20)
+            entry.glow.scale.setScalar(0.055)
           } else if (isRunning) {
-            entry.glow.scale.setScalar(0.10 + 0.03 * Math.sin(t * 3))
+            entry.glow.scale.setScalar(0.038 + 0.008 * Math.sin(t * 3))
           } else {
-            entry.glow.scale.setScalar(0.10)
+            entry.glow.scale.setScalar(0.038)
           }
         }
 
