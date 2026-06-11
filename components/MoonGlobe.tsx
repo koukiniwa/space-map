@@ -37,6 +37,53 @@ const STATUS_LABEL: Record<LandingSite["status"], string> = {
   lost:     "消息不明",
 }
 
+type FlagDraw = (cx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) => void
+const FLAG_DRAWERS: Record<string, FlagDraw> = {
+  "ソビエト連邦": (cx, x, y, w, h) => {
+    cx.fillStyle = '#CC0000'; cx.fillRect(x, y, w, h)
+    cx.fillStyle = '#FFD700'; cx.font = `bold ${h * .7}px sans-serif`
+    cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText('★', x + w / 2, y + h / 2)
+  },
+  "ロシア": (cx, x, y, w, h) => {
+    ['#FFFFFF', '#0039A6', '#D52B1E'].forEach((c, i) => { cx.fillStyle = c; cx.fillRect(x, y + i * h / 3, w, h / 3 + 1) })
+  },
+  "アメリカ": (cx, x, y, w, h) => {
+    for (let i = 0; i < 6; i++) { cx.fillStyle = i % 2 === 0 ? '#B22234' : '#FFFFFF'; cx.fillRect(x, y + i * h / 6, w, h / 6 + 1) }
+    cx.fillStyle = '#3C3B6E'; cx.fillRect(x, y, w * .45, h * .5)
+    cx.fillStyle = '#FFFFFF'; cx.font = `${h * .35}px sans-serif`; cx.textAlign = 'center'; cx.textBaseline = 'middle'
+    cx.fillText('★', x + w * .22, y + h * .24)
+  },
+  "アメリカ（民間）": (cx, x, y, w, h) => {
+    for (let i = 0; i < 6; i++) { cx.fillStyle = i % 2 === 0 ? '#B22234' : '#FFFFFF'; cx.fillRect(x, y + i * h / 6, w, h / 6 + 1) }
+    cx.fillStyle = '#3C3B6E'; cx.fillRect(x, y, w * .45, h * .5)
+    cx.fillStyle = '#FFFFFF'; cx.font = `${h * .35}px sans-serif`; cx.textAlign = 'center'; cx.textBaseline = 'middle'
+    cx.fillText('★', x + w * .22, y + h * .24)
+  },
+  "中国": (cx, x, y, w, h) => {
+    cx.fillStyle = '#DE2910'; cx.fillRect(x, y, w, h)
+    cx.fillStyle = '#FFDE00'; cx.font = `bold ${h * .6}px sans-serif`; cx.textAlign = 'center'; cx.textBaseline = 'middle'
+    cx.fillText('★', x + w * .28, y + h * .42)
+    cx.font = `${h * .28}px sans-serif`
+    [[.62, .22], [.75, .32], [.75, .55], [.62, .65]].forEach(([px, py]) => cx.fillText('★', x + w * px, y + h * py))
+  },
+  "インド": (cx, x, y, w, h) => {
+    ['#FF9933', '#FFFFFF', '#138808'].forEach((c, i) => { cx.fillStyle = c; cx.fillRect(x, y + i * h / 3, w, h / 3 + 1) })
+    cx.strokeStyle = '#000080'; cx.lineWidth = 1.5
+    cx.beginPath(); cx.arc(x + w / 2, y + h / 2, h * .18, 0, Math.PI * 2); cx.stroke()
+  },
+  "日本": (cx, x, y, w, h) => {
+    cx.fillStyle = '#FFFFFF'; cx.fillRect(x, y, w, h)
+    cx.fillStyle = '#BC002D'; cx.beginPath(); cx.arc(x + w / 2, y + h / 2, h * .32, 0, Math.PI * 2); cx.fill()
+  },
+  "イスラエル": (cx, x, y, w, h) => {
+    cx.fillStyle = '#FFFFFF'; cx.fillRect(x, y, w, h)
+    cx.fillStyle = '#0038B8'
+    cx.fillRect(x, y + h * .18, w, h * .12); cx.fillRect(x, y + h * .70, w, h * .12)
+    cx.font = `${h * .45}px sans-serif`; cx.textAlign = 'center'; cx.textBaseline = 'middle'
+    cx.fillText('✡', x + w / 2, y + h / 2)
+  },
+}
+
 interface GeoFeature { nameJa: string; lat: number; lon: number; type: 'mare' | 'crater' }
 const GEO_FEATURES: GeoFeature[] = [
   { nameJa: "静かの海",     lat:   8.5, lon:  31.4, type: 'mare'   },
@@ -305,17 +352,50 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
 
       // ── Build markers ──────────────────────────────────────
       interface MarkerEntry {
-        dot:     THREE.Mesh
-        ring:    THREE.Mesh
-        glow:    THREE.Sprite
-        label:   THREE.Sprite
-        hitArea: THREE.Mesh   // invisible large sphere — the real click target
-        site:    LandingSite
+        flag:        THREE.Sprite
+        glow:        THREE.Sprite
+        label:       THREE.Sprite
+        hitArea:     THREE.Mesh
+        site:        LandingSite
+        frontFacing: boolean
       }
       const markerEntries: MarkerEntry[] = []
 
-      // Shared invisible material for hit areas
       const hitMat = new THREE.MeshBasicMaterial({ visible: false })
+
+      const makeFlag = (site: LandingSite): THREE.Sprite => {
+        const W = 80, H = 120
+        const fw = 52, fh = 34       // flag rectangle dimensions
+        const fx = W / 2, fy = 8     // flag top-left (pole is at W/2)
+        const cv = document.createElement("canvas")
+        cv.width = W; cv.height = H
+        const cx = cv.getContext("2d")!
+
+        // Pole
+        const lost = site.status === 'lost'
+        cx.strokeStyle = lost ? 'rgba(180,100,100,0.75)' : 'rgba(210,210,210,0.9)'
+        cx.lineWidth = 2.5
+        cx.beginPath(); cx.moveTo(W / 2, H - 4); cx.lineTo(W / 2, fy); cx.stroke()
+
+        // Flag background
+        cx.globalAlpha = lost ? 0.55 : 1.0
+        const draw = FLAG_DRAWERS[site.country]
+        if (draw) {
+          draw(cx, fx, fy, fw, fh)
+        } else {
+          cx.fillStyle = '#666'; cx.fillRect(fx, fy, fw, fh)
+        }
+        // Flag border
+        cx.globalAlpha = lost ? 0.4 : 0.7
+        cx.strokeStyle = 'rgba(255,255,255,0.5)'; cx.lineWidth = 1
+        cx.strokeRect(fx, fy, fw, fh)
+        cx.globalAlpha = 1.0
+
+        const mat = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthTest: true, sizeAttenuation: true })
+        const sprite = new THREE.Sprite(mat)
+        sprite.scale.set(0.09, 0.135, 1)
+        return sprite
+      }
 
       for (const site of sites) {
         const pos    = latLonToVec3(site.lat, site.lon, 1.013)
@@ -323,45 +403,29 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
         const normal = posVec.clone().normalize()
         const color  = STATUS_COLOR[site.status]
 
-        // Glow disc (additive, no depth write)
+        // Glow at surface base
         const glow = new THREE.Sprite(new THREE.SpriteMaterial({
-          map:      glowTex,
-          color,
-          blending: THREE.AdditiveBlending,
-          transparent: true,
-          depthWrite: false,
-          depthTest:  false,
+          map: glowTex, color,
+          blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, depthTest: false,
         }))
-        glow.scale.set(0.12, 0.12, 1)
+        glow.scale.set(0.10, 0.10, 1)
         glow.position.copy(posVec)
 
-        // Ring torus (lies tangent to sphere surface)
-        const ring = new THREE.Mesh(
-          new THREE.TorusGeometry(0.025, 0.004, 6, 32),
-          new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.9 })
-        )
-        ring.position.copy(posVec)
-        ring.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal)
+        // Flag — center positioned so pole base sits at surface
+        const flag = makeFlag(site)
+        flag.position.copy(normal.clone().multiplyScalar(1.013 + 0.135 / 2))
 
-        // Center dot (visual only)
-        const dot = new THREE.Mesh(
-          new THREE.SphereGeometry(0.012, 8, 6),
-          new THREE.MeshBasicMaterial({ color })
-        )
-        dot.position.copy(posVec)
-
-        // Label sprite
+        // Label (shown on hover / selected)
         const label = makeLabel(site)
         label.position.copy(normal.clone().multiplyScalar(1.22))
 
-        // Large invisible hit sphere — covers dot + ring + label area
-        // radius 0.12 ≈ ~80px click target at default zoom
+        // Invisible hit sphere
         const hitArea = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 6), hitMat)
         hitArea.position.copy(normal.clone().multiplyScalar(1.08))
         hitArea.userData = { site }
 
-        moonGroup.add(glow, ring, dot, label, hitArea)
-        markerEntries.push({ dot, ring, glow, label, hitArea, site })
+        moonGroup.add(glow, flag, label, hitArea)
+        markerEntries.push({ flag, glow, label, hitArea, site, frontFacing: false })
       }
 
       // ── Polar axis ─────────────────────────────────────────
@@ -447,8 +511,8 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
         pointer.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1
         pointer.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1
         raycaster.setFromCamera(pointer, camera)
-        // Only raycast against front-facing markers (dot.visible is the front-face flag)
-        const frontHitAreas = markerEntries.filter(m => m.dot.visible).map(m => m.hitArea)
+        // Only raycast against front-facing markers
+        const frontHitAreas = markerEntries.filter(m => m.frontFacing).map(m => m.hitArea)
         const hits = raycaster.intersectObjects(frontHitAreas)
         if (hits.length > 0) {
           const entry = markerEntries.find(m => m.hitArea === hits[0].object)
@@ -475,7 +539,7 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
         pointer.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1
         pointer.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1
         raycaster.setFromCamera(pointer, camera)
-        const frontHitAreas = markerEntries.filter(m => m.dot.visible).map(m => m.hitArea)
+        const frontHitAreas = markerEntries.filter(m => m.frontFacing).map(m => m.hitArea)
         const hits = raycaster.intersectObjects(frontHitAreas)
         if (hits.length > 0) {
           const entry = markerEntries.find(m => m.hitArea === hits[0].object)
@@ -546,7 +610,7 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
           _tmpQ.setFromAxisAngle(_yAxis, 0.001)
           moonGroup.quaternion.multiply(_tmpQ)
         } else if (!isDragging) {
-          // Inertia: coast after drag release
+          // Inertia: coast after drag release, then resume auto-rotation
           if (Math.abs(rotV.x) > 0.00005 || Math.abs(rotV.y) > 0.00005) {
             _tmpQ.setFromAxisAngle(_yAxis, rotV.y)
             moonGroup.quaternion.premultiply(_tmpQ)
@@ -554,6 +618,8 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
             moonGroup.quaternion.premultiply(_tmpQ)
             rotV.x *= 0.93
             rotV.y *= 0.93
+          } else {
+            autoRotate = true
           }
         }
 
@@ -574,8 +640,8 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
           const show = facing > 0.08
           const isActive = activeSiteRef.current?.id === entry.site.id
           const isHovered = hoveredRef.current === entry.site
-          entry.dot.visible   = show
-          entry.ring.visible  = show
+          entry.frontFacing   = show
+          entry.flag.visible  = show
           entry.glow.visible  = show
           // Labels only on hover or selected — keeps the globe uncluttered
           entry.label.visible = show && (isHovered || isActive)
@@ -585,14 +651,10 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
           const isRunning = entry.site.status === "active"
 
           if (isHovered) {
-            entry.ring.scale.setScalar(1.6)
             entry.glow.scale.setScalar(0.20)
           } else if (isRunning) {
-            const pulse = 1 + 0.25 * Math.sin(t * 3)
-            entry.ring.scale.setScalar(pulse)
             entry.glow.scale.setScalar(0.10 + 0.03 * Math.sin(t * 3))
           } else {
-            entry.ring.scale.setScalar(1)
             entry.glow.scale.setScalar(0.10)
           }
         }
