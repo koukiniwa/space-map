@@ -37,6 +37,26 @@ const STATUS_LABEL: Record<LandingSite["status"], string> = {
   lost:     "消息不明",
 }
 
+interface GeoFeature { nameJa: string; lat: number; lon: number; type: 'mare' | 'crater' }
+const GEO_FEATURES: GeoFeature[] = [
+  { nameJa: "静かの海",     lat:   8.5, lon:  31.4, type: 'mare'   },
+  { nameJa: "雨の海",       lat:  32.8, lon: -15.6, type: 'mare'   },
+  { nameJa: "晴れの海",     lat:  28.0, lon:  17.5, type: 'mare'   },
+  { nameJa: "危機の海",     lat:  17.0, lon:  59.1, type: 'mare'   },
+  { nameJa: "嵐の大洋",     lat:  18.4, lon: -57.4, type: 'mare'   },
+  { nameJa: "冷たい海",     lat:  56.0, lon:   1.4, type: 'mare'   },
+  { nameJa: "湿りの海",     lat: -24.4, lon: -38.6, type: 'mare'   },
+  { nameJa: "豊かの海",     lat:  -7.8, lon:  51.3, type: 'mare'   },
+  { nameJa: "蒸気の海",     lat:  13.3, lon:   3.6, type: 'mare'   },
+  { nameJa: "ネクタルの海", lat: -14.5, lon:  33.6, type: 'mare'   },
+  { nameJa: "ティコ",       lat: -43.3, lon: -11.1, type: 'crater' },
+  { nameJa: "コペルニクス", lat:   9.7, lon: -20.1, type: 'crater' },
+  { nameJa: "プラトン",     lat:  51.6, lon:  -9.4, type: 'crater' },
+  { nameJa: "アリスタルコス", lat: 23.7, lon: -47.4, type: 'crater' },
+  { nameJa: "クラビウス",   lat: -58.4, lon: -14.1, type: 'crater' },
+  { nameJa: "ケプラー",     lat:   8.1, lon: -38.0, type: 'crater' },
+]
+
 export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: MoonGlobeProps) {
   const mountRef      = useRef<HTMLDivElement>(null)
   const zoomRef       = useRef({ in: () => {}, out: () => {} })
@@ -248,6 +268,34 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
         const sprite = new THREE.Sprite(mat)
         sprite.scale.set(0.26, 0.058, 1)
         return sprite
+      }
+
+      // ── Geo feature labels (mare / crater) ────────────────
+      interface FeatureLabelEntry { sprite: THREE.Sprite; type: 'mare' | 'crater'; normal: THREE.Vector3 }
+      const featureLabelEntries: FeatureLabelEntry[] = []
+      for (const feat of GEO_FEATURES) {
+        const W = feat.type === 'mare' ? 280 : 200
+        const H = feat.type === 'mare' ? 48  : 40
+        const cv = document.createElement("canvas")
+        cv.width = W; cv.height = H
+        const cx = cv.getContext("2d")!
+        cx.fillStyle = feat.type === 'mare' ? "rgba(120,180,255,0.12)" : "rgba(255,255,255,0.08)"
+        cx.beginPath(); cx.roundRect(0, 0, W, H, 6); cx.fill()
+        cx.font = feat.type === 'mare' ? "italic 22px sans-serif" : "16px sans-serif"
+        cx.fillStyle = feat.type === 'mare' ? "rgba(180,210,255,0.85)" : "rgba(220,220,220,0.75)"
+        cx.textAlign = "center"; cx.textBaseline = "middle"
+        cx.fillText(feat.nameJa, W / 2, H / 2)
+        const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+          map: new THREE.CanvasTexture(cv), transparent: true, depthTest: true, sizeAttenuation: true,
+        }))
+        const scale = feat.type === 'mare' ? 0.30 : 0.20
+        sprite.scale.set(scale, scale * (H / W), 1)
+        const p = latLonToVec3(feat.lat, feat.lon, 1.015)
+        sprite.position.set(p.x, p.y, p.z)
+        sprite.visible = false
+        moonGroup.add(sprite)
+        const normal = new THREE.Vector3(p.x, p.y, p.z).normalize()
+        featureLabelEntries.push({ sprite, type: feat.type, normal })
       }
 
       // ── Build markers ──────────────────────────────────────
@@ -549,6 +597,15 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
             entry.ring.scale.setScalar(1)
             entry.glow.scale.setScalar(0.10)
           }
+        }
+
+        // Geo feature label visibility (zoom-based + front-face)
+        const camDist = camera.position.z
+        for (const fl of featureLabelEntries) {
+          const threshold = fl.type === 'mare' ? 2.7 : 2.2
+          if (camDist > threshold) { fl.sprite.visible = false; continue }
+          const wn = fl.normal.clone().applyMatrix4(moonGroup.matrixWorld).normalize()
+          fl.sprite.visible = wn.dot(camDir) > 0.15
         }
 
         renderer.render(scene, camera)
