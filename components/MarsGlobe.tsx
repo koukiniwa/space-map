@@ -242,10 +242,19 @@ export default function MarsGlobe({ sites, onSelectSite, paused, activeSite }: M
       // ── Mars ───────────────────────────────────────────────
       const loader   = new THREE.TextureLoader()
       const maxAniso = renderer.capabilities.getMaxAnisotropy()
+      const loadTex  = (path: string) => {
+        const t = loader.load(path); t.anisotropy = maxAniso; return t
+      }
+      // Load 2K preview immediately, then swap to 8K when ready
       const marsMat  = new THREE.MeshStandardMaterial({
-        map:       loader.load("/textures/mars.jpg", tex => { tex.anisotropy = maxAniso }),
+        map:       loadTex("/textures/mars-preview.jpg"),
         roughness: 0.95,
         metalness: 0.0,
+      })
+      loader.load("/textures/mars.jpg", tex => {
+        tex.anisotropy = maxAniso
+        marsMat.map = tex
+        marsMat.needsUpdate = true
       })
       const mars = new THREE.Mesh(new THREE.SphereGeometry(1, 256, 256), marsMat)
 
