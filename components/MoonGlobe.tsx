@@ -49,12 +49,26 @@ const GEO_FEATURES: GeoFeature[] = [
   { nameJa: "豊かの海",     lat:  -7.8, lon:  51.3, type: 'mare'   },
   { nameJa: "蒸気の海",     lat:  13.3, lon:   3.6, type: 'mare'   },
   { nameJa: "ネクタルの海", lat: -14.5, lon:  33.6, type: 'mare'   },
+  { nameJa: "東の海",       lat: -19.4, lon: -92.8, type: 'mare'   },
+  { nameJa: "モスクワの海", lat:  27.3, lon: 147.9, type: 'mare'   },
+  { nameJa: "知の海",       lat: -33.7, lon: 163.5, type: 'mare'   },
+  // Craters — nearside
   { nameJa: "ティコ",       lat: -43.3, lon: -11.1, type: 'crater' },
   { nameJa: "コペルニクス", lat:   9.7, lon: -20.1, type: 'crater' },
   { nameJa: "プラトン",     lat:  51.6, lon:  -9.4, type: 'crater' },
   { nameJa: "アリスタルコス", lat: 23.7, lon: -47.4, type: 'crater' },
   { nameJa: "クラビウス",   lat: -58.4, lon: -14.1, type: 'crater' },
   { nameJa: "ケプラー",     lat:   8.1, lon: -38.0, type: 'crater' },
+  { nameJa: "マギヌス",     lat: -50.5, lon:  -6.0, type: 'crater' },
+  { nameJa: "モレトゥス",   lat: -70.6, lon:  -5.8, type: 'crater' },
+  // South pole
+  { nameJa: "南極エイトケン盆地", lat: -56.0, lon: 180.0, type: 'mare' },
+  { nameJa: "シャクルトン",  lat: -89.5, lon:   0.0, type: 'crater' },
+  { nameJa: "シュレーディンガー", lat: -74.9, lon: 133.5, type: 'crater' },
+  // Far side
+  { nameJa: "チオルコフスキー", lat: -20.4, lon: 128.9, type: 'crater' },
+  { nameJa: "アポロ",       lat: -36.1, lon:-151.8, type: 'crater' },
+  { nameJa: "ヘルツシュプルング", lat: 2.6, lon:-128.3, type: 'crater' },
 ]
 
 export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: MoonGlobeProps) {
