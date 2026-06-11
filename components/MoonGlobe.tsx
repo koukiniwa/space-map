@@ -536,7 +536,7 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
       const _xAxis = new THREE.Vector3(1, 0, 0)
       const _tmpQ  = new THREE.Quaternion()
       // Start facing the nearside of the Moon, with a slight globe-like tilt
-      moonGroup.quaternion.setFromEuler(new THREE.Euler(-0.35, -Math.PI / 2, 0, 'XYZ'))
+      moonGroup.quaternion.setFromEuler(new THREE.Euler(0, -Math.PI / 2, 0, 'XYZ'))
       let lastHoverMs  = 0
 
       const raycaster = new THREE.Raycaster()
