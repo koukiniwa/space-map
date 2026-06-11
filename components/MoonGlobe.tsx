@@ -411,9 +411,10 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
         glow.scale.set(0.10, 0.10, 1)
         glow.position.copy(posVec)
 
-        // Flag — center positioned so pole base sits at surface
+        // Flag — lower center so pole base is ~0.02 below surface,
+        // moon geometry's depth buffer clips the buried portion naturally
         const flag = makeFlag(site)
-        flag.position.copy(normal.clone().multiplyScalar(1.013 + 0.135 / 2))
+        flag.position.copy(normal.clone().multiplyScalar(1.04))
 
         // Label (shown on hover / selected)
         const label = makeLabel(site)
