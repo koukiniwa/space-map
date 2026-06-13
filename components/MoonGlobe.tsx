@@ -619,13 +619,30 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
       zoomRef.current.in  = () => { camera.position.z = Math.max(1.5, camera.position.z - 0.35) }
       zoomRef.current.out = () => { camera.position.z = Math.min(6,   camera.position.z + 0.35) }
 
+      let prevPinchDist = 0
       const onTouchStart = (e: TouchEvent) => {
         if (e.touches.length === 1) {
-          isDragging = true; autoRotate = false
+          isDragging = true; autoRotate = false; prevPinchDist = 0
           prevMouse = mouseDownPos = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+        } else if (e.touches.length === 2) {
+          isDragging = false
+          const dx = e.touches[0].clientX - e.touches[1].clientX
+          const dy = e.touches[0].clientY - e.touches[1].clientY
+          prevPinchDist = Math.hypot(dx, dy)
         }
       }
       const onTouchMove = (e: TouchEvent) => {
+        e.preventDefault()
+        if (e.touches.length === 2) {
+          const dx = e.touches[0].clientX - e.touches[1].clientX
+          const dy = e.touches[0].clientY - e.touches[1].clientY
+          const dist = Math.hypot(dx, dy)
+          if (prevPinchDist > 0) {
+            camera.position.z = Math.max(1.5, Math.min(6, camera.position.z * (prevPinchDist / dist)))
+          }
+          prevPinchDist = dist
+          return
+        }
         if (!isDragging || e.touches.length !== 1) return
         const dx = e.touches[0].clientX - prevMouse.x
         const dy = e.touches[0].clientY - prevMouse.y
@@ -635,14 +652,17 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
         moonGroup.quaternion.premultiply(_tmpQ)
         prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY }
       }
-      const onTouchEnd = () => { isDragging = false }
+      const onTouchEnd = (e: TouchEvent) => {
+        isDragging = false
+        if (e.touches.length < 2) prevPinchDist = 0
+      }
 
       container.addEventListener("mousedown",  onMouseDown)
       window.addEventListener("mousemove",     onMouseMove)
       window.addEventListener("mouseup",       onMouseUp)
       container.addEventListener("wheel",      onWheel, { passive: false })
-      container.addEventListener("touchstart", onTouchStart, { passive: true })
-      container.addEventListener("touchmove",  onTouchMove,  { passive: true })
+      container.addEventListener("touchstart", onTouchStart, { passive: false })
+      container.addEventListener("touchmove",  onTouchMove,  { passive: false })
       container.addEventListener("touchend",   onTouchEnd)
 
       const onResize = () => {

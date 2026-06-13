@@ -34,6 +34,7 @@ export default function MarsPage() {
   const [selectedSite, setSelectedSite] = useState<LandingSite | null>(null)
   const [era,    setEra]    = useState('all')
   const [result, setResult] = useState('all')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const ERA_RANGE: Record<string, [number, number]> = {
     all:     [1970, 2030],
@@ -172,15 +173,26 @@ export default function MarsPage() {
 
       {/* ── Main content ── */}
       <div className="flex flex-1 overflow-hidden relative">
+
+        {/* Mobile backdrop */}
+        {sidebarOpen && (
+          <div
+            className="md:hidden fixed inset-0 bg-black/60 z-20"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
         <MissionList
           allSites={marsSites}
           filteredSites={filteredSites}
           selectedSite={selectedSite}
-          onSelect={handleSelectSite}
+          onSelect={(site) => { handleSelectSite(site); setSidebarOpen(false) }}
           era={era}
           onEra={setEra}
           result={result}
           onResult={setResult}
+          mobileOpen={sidebarOpen}
+          onMobileClose={() => setSidebarOpen(false)}
         />
 
         <MarsGlobe
@@ -202,9 +214,19 @@ export default function MarsPage() {
         />
       </div>
 
+      {/* Mobile hamburger button */}
+      <button
+        className="md:hidden fixed bottom-16 left-4 z-20 bg-zinc-800 hover:bg-zinc-700 text-white w-11 h-11 rounded-full flex items-center justify-center text-lg shadow-lg border border-zinc-600"
+        onClick={() => setSidebarOpen(v => !v)}
+        aria-label="ミッション一覧"
+      >
+        ☰
+      </button>
+
       {/* ── Footer ── */}
       <footer className="px-6 py-1.5 border-t border-zinc-800 text-zinc-700 text-xs text-center flex-shrink-0">
-        ドラッグで回転 · スクロール / ± でズーム · マーカーまたはリストをクリックで詳細 · ESC で閉じる
+        <span className="hidden sm:inline">ドラッグで回転 · スクロール / ± でズーム · マーカーまたはリストをクリックで詳細 · ESC で閉じる</span>
+        <span className="sm:hidden">ドラッグで回転 · ピンチでズーム · マーカーをタップで詳細</span>
       </footer>
     </div>
   )

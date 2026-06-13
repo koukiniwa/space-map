@@ -4,14 +4,16 @@ import { useState } from 'react'
 import { LandingSite } from '@/data/lunar-sites'
 
 interface MissionListProps {
-  allSites:      LandingSite[]
-  filteredSites: LandingSite[]
-  selectedSite:  LandingSite | null
-  onSelect:      (site: LandingSite) => void
-  era:           string
-  onEra:         (era: string) => void
-  result:        string
-  onResult:      (r: string) => void
+  allSites:       LandingSite[]
+  filteredSites:  LandingSite[]
+  selectedSite:   LandingSite | null
+  onSelect:       (site: LandingSite) => void
+  era:            string
+  onEra:          (era: string) => void
+  result:         string
+  onResult:       (r: string) => void
+  mobileOpen?:    boolean
+  onMobileClose?: () => void
 }
 
 const FLAG: Record<string, string> = {
@@ -62,6 +64,7 @@ const RESULT_OPTIONS = [
 
 export default function MissionList({
   allSites, filteredSites, selectedSite, onSelect, era, onEra, result, onResult,
+  mobileOpen = false, onMobileClose,
 }: MissionListProps) {
   const successCount = allSites.filter(s => s.status !== 'lost').length
   const failureCount = allSites.filter(s => s.status === 'lost').length
@@ -90,11 +93,20 @@ export default function MissionList({
   const totalFiltered = filteredSites.length
 
   return (
-    <div className={`flex-shrink-0 flex flex-col bg-zinc-950 border-r border-zinc-800 font-mono transition-all duration-200 ${collapsed ? 'w-10' : 'w-64'}`}>
+    <div className={[
+      'flex-shrink-0 flex flex-col bg-zinc-950 border-r border-zinc-800 font-mono',
+      'transition-all duration-300',
+      // Mobile: fixed overlay; desktop: inline sidebar
+      'fixed md:relative z-30 md:z-auto h-full top-0 left-0',
+      // Width: mobile always 288px, desktop respects collapsed state
+      `w-72 ${collapsed ? 'md:w-10' : 'md:w-64'}`,
+      // Mobile slide-in / out
+      mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
+    ].join(' ')}>
 
-      {/* Collapse toggle */}
+      {/* Collapse toggle (desktop) / Close button (mobile) */}
       <button
-        onClick={() => setCollapsed(v => !v)}
+        onClick={() => { setCollapsed(v => !v); onMobileClose?.() }}
         className="flex items-center justify-center h-8 border-b border-zinc-800 text-zinc-500 hover:text-white text-xs flex-shrink-0"
         title={collapsed ? 'リストを開く' : 'リストを閉じる'}
       >
