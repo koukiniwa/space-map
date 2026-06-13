@@ -51,7 +51,7 @@ export const marsSites: LandingSite[] = [
     lon: -47.9,
     description: "火星への初の成功した着陸ミッション。クリュセ平原に着陸し6年以上運用された。土壌を分析して生命の痕跡を探したが決定的な証拠は得られなかった。",
     articleUrl: "https://ja.wikipedia.org/wiki/バイキング1号",
-    photoUrl: "https://photojournal.jpl.nasa.gov/jpeg/PIA00570.jpg",
+    photoUrl: "/images/missions/mars/viking-1.jpg",
     photoCredit: "NASA/JPL",
   },
   {
@@ -65,7 +65,7 @@ export const marsSites: LandingSite[] = [
     lon: -134.3,
     description: "ウトピア平原に着陸した双子ミッションの2号機。より高緯度の地点でViking 1と同様の実験を実施し、約3年8ヶ月にわたりデータを送り続けた。",
     articleUrl: "https://ja.wikipedia.org/wiki/バイキング2号",
-    photoUrl: "https://photojournal.jpl.nasa.gov/jpeg/PIA00571.jpg",
+    photoUrl: "/images/missions/mars/viking-1.jpg",
     photoCredit: "NASA/JPL",
   },
   {
@@ -79,7 +79,7 @@ export const marsSites: LandingSite[] = [
     lon: -33.3,
     description: "エアバッグ着陸方式を初採用。小型ローバー「ソジャーナー」で火星初のローバー探査を実現した。低コストで成功した探査機として注目され、後のミッションの手本となった。",
     articleUrl: "https://ja.wikipedia.org/wiki/マーズ・パスファインダー",
-    photoUrl: "https://photojournal.jpl.nasa.gov/jpeg/PIA01122.jpg",
+    photoUrl: "/images/missions/mars/pathfinder.jpg",
     photoCredit: "NASA/JPL",
   },
   {
@@ -105,8 +105,8 @@ export const marsSites: LandingSite[] = [
     lon: 175.5,
     description: "ガセフクレーターに着陸した双子ローバーの1号機。設計寿命90日を大幅に超え2010年まで約6年間活動。砂地に嵌まり動けなくなるまで探査を継続した。",
     articleUrl: "https://ja.wikipedia.org/wiki/スピリット_(探査機)",
-    photoUrl: "https://photojournal.jpl.nasa.gov/jpeg/PIA05117.jpg",
-    photoCredit: "NASA/JPL",
+    photoUrl: "/images/missions/mars/spirit.jpg",
+    photoCredit: "NASA/JPL-Caltech/Cornell",
   },
   {
     id: "opportunity",
@@ -119,8 +119,8 @@ export const marsSites: LandingSite[] = [
     lon: -5.5,
     description: "メリディアニ平原に着陸した双子ローバー2号機。設計寿命90日のところ14年以上活動し、総走行距離45kmを超えた。2018年の大砂嵐でソーラーパネルが覆われ通信途絶。",
     articleUrl: "https://ja.wikipedia.org/wiki/オポチュニティ_(探査機)",
-    photoUrl: "https://photojournal.jpl.nasa.gov/jpeg/PIA13112.jpg",
-    photoCredit: "NASA/JPL",
+    photoUrl: "/images/missions/mars/opportunity.jpg",
+    photoCredit: "NASA/JPL-Caltech",
   },
   {
     id: "phoenix",
@@ -133,7 +133,7 @@ export const marsSites: LandingSite[] = [
     lon: -125.7,
     description: "火星北極圏への着陸機。土壌中の水氷の存在を直接掘削・確認した初のミッション。冬が訪れてソーラーパネルへの太陽光が不足し運用停止。",
     articleUrl: "https://ja.wikipedia.org/wiki/フェニックス_(探査機)",
-    photoUrl: "https://photojournal.jpl.nasa.gov/jpeg/PIA11049.jpg",
+    photoUrl: "/images/missions/mars/phoenix.jpg",
     photoCredit: "NASA/JPL/University of Arizona",
   },
   {
@@ -147,7 +147,7 @@ export const marsSites: LandingSite[] = [
     lon: 137.4,
     description: "ゲールクレーターに着陸した大型ローバー。核電池(RTG)を動力とし現在も稼働中。かつて液体の水が存在した証拠や有機物を発見し、シャープ山の山腹を引き続き探査している。",
     articleUrl: "https://ja.wikipedia.org/wiki/キュリオシティ_(探査機)",
-    photoUrl: "https://photojournal.jpl.nasa.gov/jpeg/PIA16239.jpg",
+    photoUrl: "/images/missions/mars/curiosity.jpg",
     photoCredit: "NASA/JPL-Caltech/MSSS",
   },
   {
@@ -161,7 +161,7 @@ export const marsSites: LandingSite[] = [
     lon: 135.6,
     description: "エリュシウム平原に着陸した固定型着陸機。地震計で火星地震を多数観測し、火星内部構造を初めて直接計測。太陽電池への砂の堆積が進み2022年末に運用停止。",
     articleUrl: "https://ja.wikipedia.org/wiki/InSight",
-    photoUrl: "https://photojournal.jpl.nasa.gov/jpeg/PIA22743.jpg",
+    photoUrl: "/images/missions/mars/insight.jpg",
     photoCredit: "NASA/JPL-Caltech",
   },
   {
@@ -175,8 +175,8 @@ export const marsSites: LandingSite[] = [
     lon: 77.5,
     description: "ジェゼロクレーターに着陸した最新鋭ローバー。過去の生命の痕跡を探しサンプルを採取・保管中。小型ヘリ「インジェニュイティ」と協力し火星航空探査の歴史も開いた。",
     articleUrl: "https://ja.wikipedia.org/wiki/パーサビアランス_(探査機)",
-    photoUrl: "https://photojournal.jpl.nasa.gov/jpeg/PIA24543.jpg",
-    photoCredit: "NASA/JPL-Caltech",
+    photoUrl: "/images/missions/mars/perseverance.jpg",
+    photoCredit: "NASA/JPL-Caltech/MSSS",
   },
   // ── ESA ──────────────────────────────────────────────────
   {
@@ -215,7 +215,5 @@ export const marsSites: LandingSite[] = [
     lon: 109.9,
     description: "中国初の火星着陸ミッション「天問1号」のローバー。ウトピア平原に着陸し1km以上を走行、各種科学データを収集。2022年の冬眠モード移行後、太陽電池への砂堆積により復帰不能となった。",
     articleUrl: "https://ja.wikipedia.org/wiki/祝融号",
-    photoUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Tianwen-1_Zhurong_rover_selfie_on_Mars.jpg",
-    photoCredit: "CNSA/PEC",
   },
 ]
