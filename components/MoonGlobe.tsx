@@ -626,6 +626,7 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
           prevMouse = mouseDownPos = { x: e.touches[0].clientX, y: e.touches[0].clientY }
         } else if (e.touches.length === 2) {
           isDragging = false
+          rotV.x = rotV.y = 0
           const dx = e.touches[0].clientX - e.touches[1].clientX
           const dy = e.touches[0].clientY - e.touches[1].clientY
           prevPinchDist = Math.hypot(dx, dy)
@@ -646,15 +647,19 @@ export default function MoonGlobe({ sites, onSelectSite, paused, activeSite }: M
         if (!isDragging || e.touches.length !== 1) return
         const dx = e.touches[0].clientX - prevMouse.x
         const dy = e.touches[0].clientY - prevMouse.y
-        _tmpQ.setFromAxisAngle(_yAxis, dx * 0.005)
+        // 慣性用に速度を記録（マウスより感度高め）
+        rotV.x = dy * 0.006
+        rotV.y = dx * 0.006
+        _tmpQ.setFromAxisAngle(_yAxis, dx * 0.006)
         moonGroup.quaternion.premultiply(_tmpQ)
-        _tmpQ.setFromAxisAngle(_xAxis, dy * 0.005)
+        _tmpQ.setFromAxisAngle(_xAxis, dy * 0.006)
         moonGroup.quaternion.premultiply(_tmpQ)
         prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY }
       }
       const onTouchEnd = (e: TouchEvent) => {
         isDragging = false
         if (e.touches.length < 2) prevPinchDist = 0
+        // rotV はそのまま残して慣性を有効にする
       }
 
       container.addEventListener("mousedown",  onMouseDown)
